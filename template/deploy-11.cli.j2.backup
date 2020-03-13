@@ -1,0 +1,5 @@
+{% for item in war_to_deploy %}
+    {% for app in item.war %}
+    deploy --name={{ app }} --server-groups={{ item.group }}-{{ sg }}
+    {% endfor %}
+{% endfor %}

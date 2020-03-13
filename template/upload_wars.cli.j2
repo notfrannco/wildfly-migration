@@ -1,0 +1,6 @@
+{% for item in war_to_deploy %}
+    {% for app in item.war %}
+    {% set lista = app[:-13] %}
+    deploy /opt/wars-{{ jdk }}/{{ app }} --disabled --runtime-name={{ lista }}.war
+    {% endfor %}
+{% endfor %}

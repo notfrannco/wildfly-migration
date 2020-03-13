@@ -1,0 +1,22 @@
+---
+- name: JBoss eap migration
+  hosts: elk-nodo1:elk-nodo2:elk-nodo3
+  become: true
+  serial: 1
+  gather_facts: false
+  vars:
+    current_eap_home: "/opt/wildfly-17.0.1.Final/"
+    old_eap_home: "/opt/wildfly-14.0.1.Final/"
+    eap_service: "wildfly"
+
+  tasks:
+    - name: Update Wildfly eap service daemon 
+      lineinfile:
+        path: /etc/default/wildfly
+        regexp: 'JBOSS_HOME='
+        line: JBOSS_HOME={{ old_eap_home }}
+
+    - name: Restart wildfly service 
+      service:
+        name: "{{ eap_service }}"
+        state: restarted

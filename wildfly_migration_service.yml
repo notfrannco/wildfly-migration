@@ -1,0 +1,46 @@
+---
+- name: JBoss eap migration
+  hosts: elk-nodo1:elk-nodo2:elk-nodo3
+  become: true
+  serial: 1
+  gather_facts: false
+  #strategy: free
+  vars:
+    current_eap_home: "/opt/wildfly-14.0.1.Final/"
+    new_eap_home: "/opt/wildfly-17.0.1.Final/"
+    eap_service: "wildfly"
+    pause_seconds: 30
+    target: "dc"
+
+  tasks:
+    - name: change owner
+      shell: "chown -R wildfly:wildfly /opt/wildfly-17.0.1.Final/"
+
+    - name: update jboss eap service daemon 
+      lineinfile:
+        path: /etc/default/wildfly
+        regexp: 'JBOSS_HOME='
+        line: JBOSS_HOME={{ new_eap_home }}
+
+    - name: Configure firewall
+      firewalld:
+        port: "{{ item.port }}"
+        permanent: yes
+        state: "{{ item.state }}"
+      loop:
+        - {port: '9990/tcp', state: 'enabled'}
+        - {port: '8080/tcp', state: 'enabled'}
+        - {port: '8180/tcp', state: 'enabled'}
+        - {port: '5601/tcp', state: 'enabled'}
+        - {port: '40918/tcp', state: 'enabled'}
+        - {port: '8109/tcp', state: 'enabled'}
+        - {port: '8009/tcp', state: 'enabled'}
+        - {port: '8543/tcp', state: 'enabled'}
+        - {port: '8443/tcp', state: 'enabled'}
+        - {port: '43161/tcp', state: 'enabled'}
+        - {port: '55200/tcp', state: 'enabled'}
+
+    - name: restart jboss-eap service
+      service:
+        name: "{{ eap_service }}"
+        state: restarted

@@ -1,0 +1,13 @@
+[all]
+elk-nodo1
+elk-nodo2
+elk-nodo3
+
+#[dc]
+#elk-nodo1
+#
+#[group_a]
+#elk-nodo2
+#
+#[group_b]
+#elk-nodo3
